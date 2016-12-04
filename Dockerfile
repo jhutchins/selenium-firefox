@@ -1,7 +1,6 @@
 FROM selenium/standalone-firefox:3.0.1-barium
 
-RUN groupadd --gid 1000 node \
-  && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
+USER root
 
 # gpg keys listed at https://github.com/nodejs/node
 RUN set -ex \
@@ -21,6 +20,56 @@ RUN set -ex \
 ENV NPM_CONFIG_LOGLEVEL info
 ENV NODE_VERSION 7.2.0
 
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+		autoconf \
+		automake \
+		bzip2 \
+		bzr \
+		ca-certificates \
+		curl \
+		file \
+		g++ \
+		gcc \
+		git \
+		imagemagick \
+		libbz2-dev \
+		libc6-dev \
+		libcurl4-openssl-dev \
+		libdb-dev \
+		libevent-dev \
+		libffi-dev \
+		libgdbm-dev \
+		libgeoip-dev \
+		libglib2.0-dev \
+		libjpeg-dev \
+		libkrb5-dev \
+		liblzma-dev \
+		libmagickcore-dev \
+		libmagickwand-dev \
+		libmysqlclient-dev \
+		libncurses-dev \
+		libpng-dev \
+		libpq-dev \
+		libreadline-dev \
+		libsqlite3-dev \
+		libssl-dev \
+		libtool \
+		libwebp-dev \
+		libxml2-dev \
+		libxslt-dev \
+		libyaml-dev \
+		make \
+		mercurial \
+		openssh-client \
+		patch \
+		procps \
+		subversion \
+		wget \
+		xz-utils \
+		zlib1g-dev \
+  && rm -rf /var/lib/apt/lists/*
+
 RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" \
   && curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
   && gpg --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc \
@@ -29,4 +78,7 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
   && rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
+USER seluser
+
 CMD [ "node" ]
+
